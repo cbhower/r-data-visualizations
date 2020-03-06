@@ -1,0 +1,117 @@
+---
+title: "DataViz_Lab_04"
+author: "Christian Hower"
+date: "April 25, 2018"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(gapminder)
+library(reshape2)
+library(wesanderson)
+library(readr)
+```
+
+```{r, echo = FALSE, message = FALSE}
+moma <- read_csv("http://bit.ly/cs631-moma")
+```
+
+```{r, message = FALSE, warning = FALSE}
+# Max and Min
+gapMinMax <- gapminder %>% filter(year == "2007") %>% group_by(continent) %>% summarise(max = max(gdpPercap), min = min(gdpPercap)) %>% melt()
+```
+
+
+```{r, message = FALSE, warning=FALSE}
+#plot min/max facet
+ggplot(gapMinMax, aes(x = continent, y = value))+
+  geom_col()+
+  labs(title = "Minimum and Maximum GDP")+
+  facet_wrap(~variable)
+```
+
+
+```{r, message = FALSE, warning = FALSE}
+#plot side by side fail
+ggplot(gapMinMax, aes(x = continent, y = value, fill = variable))+
+  geom_col(aes(fill = variable), colour = "white")+
+  labs(title = "Minimum and Maximum GDP")+
+  scale_fill_discrete(name = "",labels = c("Max","Min"))
+```
+
+
+
+```{r, message = FALSE, warning= FALSE}
+gap_country <- gapminder %>% filter(year == "2007") %>%  group_by(continent) %>% summarize(StdDev = sd(gdpPercap), Min = min(gdpPercap),Mean = mean(gdpPercap), Max = max(gdpPercap))
+gap_country
+```
+
+```{r, message = FALSE, warning = FALSE}
+#Spread of countries gdp by continent
+gap_country <- gapminder %>% group_by(continent, country, year) %>% filter(year == "2007")
+
+ggplot(gap_country,aes(x = continent, y = gdpPercap,  fill = continent ))+
+  geom_dotplot(binwidth = .01, aes(fill = continent))+
+  geom_dotplot(binaxis = "y", stackdir = "center")+
+  labs(x = "Continent", y = "GDP Per Capita",
+       title = "Distribution of GDP Per Capita in 2007 by Continent",
+       caption = "Many countries are still behind in per capita income.")+
+  scale_fill_discrete(name = "")
+```
+
+
+
+
+```{r, message = FALSE, warning = FALSE}
+#Spread of countries gdp by continent
+gap_country <- gapminder %>% group_by(continent, country, year) %>% filter(year == "2007")
+
+gap_country
+
+ggplot(gap_country,aes(x = continent, y = gdpPercap, fill = continent ))+
+  geom_violin()+
+  labs(x = "Continent", y = "GDP Per Capita",
+       title = "Distribution of GDP Per Capita in 2007 by Continent")+
+      scale_fill_discrete(name = "")
+```     
+
+
+```{r, echo = FALSE}
+# Manipulate data
+dotplt <- moma %>% mutate(area = height_cm/100*width_cm/100) %>% filter(classification == "Painting", area < 60) %>% select(area, gift, year_acquired, year_created) %>% group_by(year_acquired, gift) %>%summarize(meanArea = mean(area))
+
+```
+
+
+```{r, echo = FALSE} 
+# dot plot
+ggplot(data = dotplt) +
+    geom_dotplot(aes(y = meanArea, x= gift, fill = gift),
+                 binaxis = "y",         # which axis to bin along
+                 binwidth = 0.25,       # Minimal difference considered diffeerent
+                 stackdir = "center"    # Centered
+                 )+
+  scale_fill_manual(name = "",
+                    labels=c("Purchased", "Received as Gift"),
+                    values = wes_palette("Darjeeling")[2:3])+
+  labs(x = "Number of Observations", y = "Mean Sq. Meters", 
+  title = "Mean Size of Acquired Paintings per year",
+  subtitle = "Size Does Not Predict Means of Acquisition",
+  caption = "Yearly mean size is typically less than 3 sq meters regardless of gift status.")+
+  theme(axis.ticks.x = element_blank(),
+        axis.text.x = element_blank())+
+        theme(legend.background = element_rect(fill = "white"))
+  
+```
+
+
+
+

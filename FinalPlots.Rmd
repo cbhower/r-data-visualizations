@@ -1,0 +1,113 @@
+---
+title: "FinalPlots"
+author: "Christian Hower"
+date: "June 18, 2018"
+output: html_document
+---
+
+
+```{r, echo = TRUE,warning=FALSE, message=FALSE}
+library(tuneR)
+library(seewave)
+#library(rgl)
+```
+
+
+
+
+# Plot 1
+
+```{r, warning = FALSE, message=FALSE}
+require(ggplot2)
+wav <- readWave("C:/Users/User/Documents/CS546/drumData 2/drumData/hip hop beat 3/Boutique 808_bip.wav")
+
+#Oscillogram
+plot(wav)
+
+sg <- ggspectro(wav, ovlp=20) # create ggplot object
+sg + stat_contour(geom="polygon", aes(fill=..level..), bins=60)+
+  scale_fill_continuous(name="Amplitude\n(dB)\n", limits=c(-70,0),
+  na.value="transparent", low="grey97", high="black") + theme_minimal()+
+  labs(x = "Time (s)", y = "Freq. (kHz)", 
+  title = "Drums: Boutique 808", subtitle = "Pattern: hip hop beat 3")
+  #annotate("text", x = 0, y = .08, label = "Kick", color = "darkblue")+
+  #annotate("text", x = .5, y = 1, label = "Snare", color = "darkblue")+
+  #annotate("text", x = .25, y = 5.5, label = "HiHat", color = "darkblue")+
+  #scale_y_log10(breaks = c(.1,.5,1,3,5,7,10,15,20))
+  #annotation_logticks(sides ="l")
+  #ylim(0,20)
+```
+
+
+
+# Plot 2
+
+```{r, warning = FALSE, message=FALSE}
+require(ggplot2)
+wav <- readWave("C:/Users/User/Documents/CS546/drumData 2/drumData/hip hop beat 3/Big Beat Remix Kit_bip.wav")
+
+#play(wav)
+
+sg <- ggspectro(wav, ovlp=20) # create ggplot object
+sg + stat_contour(geom="polygon", aes(fill=..level..), bins=60)+
+  scale_fill_continuous(name="Amplitude\n(dB)\n", limits=c(-70,0),
+  na.value="transparent", low="grey97", high="black") + theme_minimal()+
+  labs(x = "Time (s)", y = "Freq. (kHz)", 
+  title = "Drums: Big Beat Remix", subtitle = "Pattern: hip hop beat 3")+
+  annotate("text", x = 0, y = .08, label = "Kick", color = "darkblue")+
+  annotate("text", x = .5, y = .4, label = "Snare", color = "darkblue")+
+  annotate("text", x = .25, y = 1.2, label = "HiHat", color = "darkblue")+
+  scale_y_log10(breaks = c(.1,.5,1,3,5,7,10,15,20))
+#annotation_logticks(sides ="l")
+#ylim(0,20)
+```
+
+
+
+# Plot 3
+
+```{r, warning = FALSE, message=FALSE}
+require(ggplot2)
+wav <- readWave("C:/Users/User/Documents/CS546/drumData 2/drumData/hip hop beat 3/Big Beat Remix Kit_bip.wav")
+
+
+sg <- ggspectro(wav, ovlp=20) # create ggplot object
+sg + stat_contour(geom="polygon", aes(fill=..level..), bins=80)+
+  scale_fill_continuous(name="Amplitude\n(dB)\n", limits=c(-70,0),
+  na.value="transparent", low="seagreen", high="navyblue") + theme_minimal()+
+  labs(x = "Time (s)", y = "Freq. (kHz)", 
+  title = "Drums: Scientific Method", subtitle = "Pattern: hip hop beat 3")+
+  annotate("text", x = 0, y = .18, label = "Kick", color = "black")+
+  annotate("text", x = .5, y = 1, label = "Snare", color = "black")+
+  annotate("text", x = .25, y = 4.5, label = "HiHat", color = "black")+
+  scale_y_log10(breaks = c(.1,.5,1,3,5,7,10,15,20))
+#annotation_logticks(sides ="l")
+#ylim(0,20)
+```
+
+
+
+
+
+```{r}
+#spectro3D(wav,f=22050,wl=512,ovlp=75,zp=16,maga=4,palette=reverse.terrain.colors) ????
+spectro(wav,ovlp=50,zp=16,
+  collevels=seq(-40,0,0.5),
+  osc=TRUE, main = "Drums: Scientific Method, Pattern: hip hop 3", palette =reverse.cm.colors )
+```
+
+```{r}
+spectro3D(wav,wl=490,
+  ovlp=85,zp=6,maga=4,
+  palette=spectro.colors)
+```
+
+
+```{r}
+#spectro3D(wav,f=22050,wl=512,ovlp=75,zp=16,maga=4,palette=reverse.terrain.colors) ????
+spectro(wav,ovlp=50,zp=16,
+  collevels=seq(-40,0,0.5),
+  osc=TRUE, main = "Drums: Scientific Method, Pattern: hip hop 3", palette =reverse.gray.colors.2 )
+```
+
+

@@ -1,0 +1,117 @@
+---
+title: "DataViz_Lab_04"
+author: "Christian Hower"
+date: "April 25, 2018"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(gapminder)
+library(reshape2)
+library(wesanderson)
+```
+
+
+## Challenge 1: Tidy The Lord of The Rings Data
+##### Read in Data, Bind Rows into new data
+```{r, message = FALSE, warning = FALSE}
+# Read in 3 data objects. Bind together into one dataset and
+a <- read_csv("http://bit.ly/cs631-lotr-fship")
+b <- read_csv("http://bit.ly/cs631-lotr-ttow")
+c <- read_csv("http://bit.ly/cs631-lotr-rking")
+
+lotr <- dplyr::bind_rows(a,b,c)
+```
+
+```{r, message = FALSE, warning = FALSE}
+# Tidy the lord of the rings rata
+lotr_tidy <- lotr %>% mutate(Race = as.factor(Race)) %>%  gather(Gender, Values, Female:Male, factor_key = TRUE) 
+lotr_tidy
+```
+## Challenge 2: Gapminder 
+### Task 1: Get maximum and minumum for all countries
+#### Table Summary
+
+```{r, message = FALSE, warning = FALSE}
+# Max and Min
+gapMinMax <- gapminder %>% filter(year == "2007") %>% group_by(continent) %>% summarise(max = max(gdpPercap), min = min(gdpPercap)) %>% melt()
+
+gapMinMax
+
+```
+
+* Here the table would look better if the min max variable was split into 2 columns and the corresponding values were entered in the cells. This would improve the readers ability to vertically and horizontally scan the table. 
+
+#### Facet Wrap to show Min/Max mixtures
+
+```{r, message = FALSE, warning=FALSE}
+#plot min/max facet
+ggplot(gapMinMax, aes(x = continent, y = value))+
+  geom_col()+
+  labs(title = "Minimum and Maximum GDP")+
+  facet_wrap(~variable)
+```
+
+#### Stacked bars to show Min/Max mixture
+
+```{r, message = FALSE, warning = FALSE}
+#plot side by side fail
+ggplot(gapMinMax, aes(x = continent, y = value, fill = variable))+
+  geom_col(aes(fill = variable), colour = "white")+
+  labs(title = "Minimum and Maximum GDP")+
+  scale_fill_discrete(name = "",labels = c("Max","Min"))
+```
+
+* This plot could be improved by changing the order of bars to reflect heirarchy. Also, This plot might look better as a side by side barchart rather than stacked. It might be worth rescaling the y axis so Africa min is visible. 
+
+
+### Task 2: Spread of GDP by Continent
+
+```{r, message = FALSE, warning= FALSE}
+gap_country <- gapminder %>% filter(year == "2007") %>%  group_by(continent) %>% summarize(StdDev = sd(gdpPercap), Min = min(gdpPercap),Mean = mean(gdpPercap), Max = max(gdpPercap))
+gap_country
+```
+
+```{r, message = FALSE, warning = FALSE}
+#Spread of countries gdp by continent
+gap_country <- gapminder %>% group_by(continent, country, year) %>% filter(year == "2007")
+
+ggplot(gap_country,aes(x = continent, y = gdpPercap,  fill = continent ))+
+  geom_dotplot(binwidth = .01, aes(fill = continent))+
+  
+  geom_dotplot(binaxis = "y", stackdir = "center")+
+  labs(x = "Continent", y = "GDP Per Capita",
+       title = "Distribution of GDP Per Capita in 2007 by Continent",
+       caption = "Many Countries are still behind in per capita income")+
+  scale_fill_discrete(name = "")
+```
+
+* Fixing overlapping points here is desirable. Possibly rescale or change bin width to improve overlapping for African countries with low GDP.
+
+
+```{r, message = FALSE, warning = FALSE}
+#Spread of countries gdp by continent
+gap_country <- gapminder %>% group_by(continent, country, year) %>% filter(year == "2007")
+
+gap_country
+
+ggplot(gap_country,aes(x = continent, y = gdpPercap, fill = continent ))+
+  geom_violin()+
+  labs(x = "Continent", y = "GDP Per Capita",
+       title = "Distribution of GDP Per Capita in 2007 by Continent")+
+      scale_fill_discrete(name = "")
+```     
+
+* The violin plot implies observations that have not actually been recorded by assigning mass to areas where no recordings exist. Since we are dealing with the *population* of countries this is not an ideal representation. Also oceania dissapears because there is so little mass between the New Zealand and Australia, which are the only two members of that continental group. Oceania is also not shown on the legend. 
+
+
+
+

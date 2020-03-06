@@ -1,0 +1,433 @@
+---
+title: "Data_Viz_Lab03"
+author: "Christian Hower"
+date: "April 25, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Import Packages
+```{r, echo = FALSE}
+library(tidyverse)
+library(forcats)
+library(RColorBrewer)
+library(viridis)
+library(ggthemes)
+library(wesanderson)
+library(colorblindr)
+```
+Load Data 
+```{r}
+sounds <- read_csv("http://bit.ly/cs631-meow")
+```
+
+
+
+#### Challenge 1
+
+```{r}
+dim(sounds)
+glimpse(sounds)
+# max number of respondents per age
+sounds %>% group_by(age) %>% summarise(max_resp = max(kids_respond))
+# total number of respondents in dataset
+sounds %>% group_by(age) %>% summarise(max_resp = max(kids_respond)) %>% summarise(sum(max_resp))
+# number of kids per age
+sounds %>% select(age) %>% count((as.factor(age)))
+# number of animal sounds
+sounds %>% distinct(sound)
+```
+
+
+* Which variables are continuous? prop_understand, prop_produe, age, kids_respond, kids_understand, kids_produce
+* Which ones are categorical or ordinal? Sound
+* How many total kids do we have data for? 2416
+* How many ages (in months)? There are 10 different ages by month.
+* How many kids per age? 3
+* How many types of animal sounds? What are they? 3, "woof woof", "meow", "cockadoodledoo"
+
+
+#### Challenge 2
+
+```{r}
+ggplot(sounds, aes(x = sound, y = kids_produce))+
+  geom_col()
+glimpse(sounds)
+```
+
+```{r}
+sounds %>%  group_by(age) %>% summarize(max_respond = max(kids_respond)) %>%  summarize(sum(max_respond))
+ggplot(sounds, aes(x = age, y = prop_produce)) +
+  geom_col()+
+  ylab("Total Children Producing")+
+  facet_wrap("sound")
+```
+
+
+```{r}
+sounds %>%  group_by(age) %>% summarize(max_respond = max(kids_respond)) %>%  summarize(sum(max_respond))
+ggplot(sounds, aes(x = age, y = prop_produce)) +
+  geom_point()+
+  ylab("Total Children Producing")+
+  facet_wrap("sound")
+```
+
+
+
+```{r}
+ggplot(sounds, aes(x = age, y = prop_produce)) +
+  geom_point(size = 2)+
+  xlab("Age(Months)")+
+  ylab("Total Children Producing")
+glimpse(sounds)
+```
+
+
+#### Challenge 3
+
+```{r}
+ggplot(sounds, aes(x = age, y = prop_produce)) + 
+  geom_point(aes(color = sound), size = 2) +
+  xlab("Age(Months)")+
+  ylab("Total Children Producing")
+glimpse(sounds)
+```
+
+#### Challenge 3
+
+```{r}
+ggplot(sounds, aes(x = age, y = prop_produce)) +
+  geom_line()+
+  geom_point(aes(color = sound))+
+  xlab("Age(Months)")+
+  ylab("Total Children Producing")
+
+```
+
+
+```{r}
+ggplot(sounds, aes(x = age, y = prop_produce)) +
+  geom_line(aes(group = sound))+
+  geom_point(aes(color = sound))+
+  xlab("Age(Months)")+
+  ylab("Total Children Producing")
+```
+
+#### Challenge 4
+
+```{r}
+ggplot(sounds, aes(x = age, y = prop_produce, color = sound)) + 
+  geom_line() +
+  geom_point(size = 2) +
+  xlab("Age(Months)")+
+  ylab("Total Children Producing")
+```
+
+```{r}
+ggplot(sounds, aes(x = age, y = prop_produce, color = sound)) + 
+  geom_smooth(se = FALSE, lwd = .5) +
+  geom_point(size = 2)  +
+  xlab("Age(Months)")+
+  ylab("Total Children Producing")
+```
+
+```{r}
+sounds <- sounds %>% mutate(sound = as.factor(sound))
+
+sound_traj <- ggplot(sounds, aes(x = age, y = prop_produce, color = fct_reorder2(sound, age, prop_produce))) +
+  geom_smooth(se = FALSE, lwd = .5) +
+  geom_point(size = 2) +
+  labs(x = "Age (months)", y = "Proportion of Children Producing", color = "sound")
+sound_traj
+```
+
+```{r}
+sound_traj <- ggplot(sounds, aes(x = age, y = prop_produce, color = fct_reorder2(sound, age, prop_produce))) +
+  geom_smooth(se = FALSE, lwd = .5) +
+  geom_point(size = 2) +
+  labs(x = "Age (months)", y = "Proportion of Children Producing", color = "sound")
+
+sound_traj +
+  scale_color_hue(h = c(0, 90), l = 65, c = 100)
+```
+
+
+```{r}
+sound_traj <- ggplot(sounds, aes(x = age, y = prop_produce, color = fct_reorder2(sound, age, prop_produce))) +
+  geom_smooth(se = FALSE, lwd = .5) +
+  geom_point(size = 2) +
+  labs(x = "Age (months)", y = "Proportion of Children Producing", color = "sound")
+
+sound_traj +
+  scale_color_hue(l = 45)
+```
+
+```{r}
+sound_traj <- ggplot(sounds, aes(x = age, y = prop_produce, color = fct_reorder2(sound, age, prop_produce))) +
+  geom_smooth(se = FALSE, lwd = .5) +
+  geom_point(size = 2) +
+  labs(x = "Age (months)", y = "Proportion of Children Producing", color = "sound")
+
+sound_traj +
+  scale_color_hue(l = 75, c = 50)
+```
+
+
+```{r}
+sound_traj <- ggplot(sounds, aes(x = age, y = prop_produce, color = fct_reorder2(sound, age, prop_produce))) +
+  geom_smooth(se = FALSE, lwd = .5) +
+  geom_point(size = 2) +
+  labs(x = "Age (months)", y = "Proportion of Children Producing", color = "sound")
+
+sound_traj +
+  scale_color_manual(values = c("cornflowerblue", 
+                                "seagreen", "coral"))
+```
+
+##### Challenge 5
+
+```{r}
+ggplot(sounds, aes(x = age, 
+                         y = prop_produce, 
+                         color = fct_reorder2(sound, age, prop_produce))) + 
+  geom_smooth(se = FALSE, lwd = .5) +
+  geom_point(size = 2) +
+  labs(x = "Age (months)", 
+       y = "Proportion of Children Producing", 
+       color = "sound") +
+  scale_fill_manual(values = c("cornflowerblue", 
+                               "seagreen", "coral"))
+```
+
+```{r}
+ggplot(sounds, aes(x = age, y = prop_produce, fill = fct_reorder2(sound, age, prop_produce))) + 
+  geom_smooth(se = FALSE, lwd = .5) +
+  geom_point(size = 2) +
+  labs(x = "Age (months)", y = "Proportion of Children Producing", fill = "sound") +
+  scale_fill_manual(values = c("cornflowerblue", 
+                               "seagreen", "coral"))
+```
+ 
+ 
+ In the first plot the global color is specified to map to the sounds variable not the fill. Specifying fill color does not have an effect in this instance.
+ 
+ In the second plot fill is assigned to line but line geom's do not have a fill argument. The specific geom point chosen does not take a fill argument either. 
+ 
+ 
+#### Challenge 6
+  
+```{r}
+ggplot(sounds, aes(x = age, y = prop_produce, fill = fct_reorder2(sound, age, prop_produce))) + 
+  geom_smooth(aes(color = fct_reorder2(sound, age, prop_produce)), se = FALSE, lwd = .5, show.legend = FALSE) +
+  geom_point(size = 2, shape = 21) +
+  labs(x = "Age (months)", y = "Proportion of Children Producing", fill = "sound")
+```
+
+
+```{r}
+ggplot(sounds, aes(x = age, y = prop_produce, fill = fct_reorder2(sound, age, prop_produce))) + 
+  geom_smooth(aes(color = fct_reorder2(sound, age, prop_produce)),se = FALSE, lwd = .5, show.legend = FALSE) +
+  geom_point(size = 2, shape = 21) +
+  labs(x = "Age (months)", y = "Proportion of Children Producing", fill = "sound") +
+  scale_fill_manual(values = c("cornflowerblue", "seagreen", "coral")) +
+  scale_color_manual(values = c("cornflowerblue", "seagreen", "coral"))
+```
+
+  
+```{r}
+my_colors <- c("cadetblue", "steelblue", "salmon")
+sound_traj +
+  scale_color_manual(values = my_colors)
+```
+  
+#### Challenge 7
+
+```{r}
+sb_colorblind <- c("#008080","#0072B2", "#fabebe", "#46f0f0",
+                        "#911eb4", "#f58231", "#0082c8")
+sound_traj +
+  scale_colour_manual(values = sb_colorblind)
+```
+
+```{r}
+brewer.pal(5, "Dark2") # list 5 hex colors
+```
+
+```{r}
+sound_traj +
+  scale_color_brewer(palette = "Dark2")
+```
+```{r}
+names(wes_palettes)
+wes_palette("GrandBudapest2")
+```
+```{r}
+sound_traj +
+  scale_color_manual(values = wes_palette("Darjeeling"))
+```
+
+#### Challenge 8
+
+```{r}
+sound_traj +
+  scale_color_manual(values = wes_palette("Darjeeling")[3:5])
+```
+
+
+```{r}
+sound_traj +
+  scale_color_manual(values = wes_palette("Darjeeling")[c(2,3,5)])
+```
+
+#### Challenge 9
+
+```{r}
+ggplot(sounds, aes(x = age, y = prop_produce, fill = fct_reorder2(sound, age, prop_produce))) + 
+  geom_smooth(aes(color = fct_reorder2(sound, age, prop_produce)), se = FALSE, lwd = .5, show.legend = FALSE) +
+  geom_point(size = 2, shape = 21, colour = "midnightblue") +
+  labs(x = "Age (months)", y = "Proportion of Children Producing", fill = "sound") +
+  scale_fill_viridis(discrete = TRUE) +
+  scale_color_viridis(discrete = TRUE) +
+  theme_bw()
+```
+
+```{r}
+sound_traj +
+  scale_color_grey() +
+  theme_minimal()
+```
+
+```{r}
+sound_traj +
+  scale_color_grey(start = 0.2, end = .8) 
+```
+
+
+```{r}
+ggplot(sounds, aes(x = age, y = prop_produce, fill = fct_reorder2(sound, age, prop_produce))) + 
+  geom_smooth(aes(color = fct_reorder2(sound, age, prop_produce)),se = FALSE, lwd = .5, show.legend = FALSE) +
+  geom_point(size = 2, shape = 21) +
+  labs(x = "Age (months)", y = "Proportion of Children Producing", fill = "sound") +
+  scale_fill_grey(start = 0.3, end = 1) +
+  scale_color_grey(start = 0.3, end = 1) 
+```
+
+```{r}
+ggplot(sounds, aes(x = age, y = prop_produce, fill = fct_reorder2(sound, age, prop_produce))) + 
+  geom_smooth(aes(lty = fct_reorder2(sound, age, prop_produce)), color = "black", se = FALSE, lwd = .5, show.legend =FALSE) +
+  geom_point(size = 2, shape = 21) +
+  labs(x = "Age (months)", y = "Proportion of Children Producing", fill = "sound") +
+  scale_fill_grey(start = 0.3, end = 1) 
+```
+
+```{r}
+ggplot(sounds, aes(x = age, y = prop_produce, fill = fct_reorder2(sound, age, prop_produce))) + 
+  geom_smooth(aes(color = fct_reorder2(sound, age, prop_produce),lty = fct_reorder2(sound, age, prop_produce)),
+              se = FALSE, lwd = .5, show.legend = FALSE) +
+  geom_point(size = 2, shape = 21) +
+  labs(x = "Age (months)", y = "Proportion of Children Producing", fill = "sound") +
+  scale_fill_grey(start = 0.3, end = .8) +
+  scale_color_grey(start = 0.3, end = .8) 
+```
+
+```{r}
+library(colorblindr)
+cvd_grid(sound_traj)
+```
+
+```{r}
+cb_sound_traj <- sound_traj +
+  scale_color_OkabeIto()
+
+cb_sound_traj
+```
+
+```{r}
+library(ggrepel)
+
+sounds <- sounds %>%
+  mutate(label = case_when(
+    age == max(age) ~ sound))
+
+ggplot(sounds, aes(x = age, 
+                   y = prop_produce, 
+                   color = fct_reorder2(sound, age, prop_produce))) +
+  geom_smooth(se = FALSE, lwd = .5) +
+  geom_point(size = 2) +
+  labs(x = "Age (months)", 
+       y = "Proportion of Children Producing") +
+  geom_text_repel(aes(label = label),
+                  nudge_x = 1,
+                  direction = "y",
+                  na.rm = TRUE) +
+  guides(color = FALSE)
+```
+
+
+#### CHALLENGE 10
+
+Subset Data
+
+```{r}
+library(nycflights13)
+flights <- nycflights13::weather 
+flightTemp <- flights %>% filter(year == "2013") %>% select(-(dewp:time_hour)) %>%
+  group_by(origin,month) %>% summarise(avg_temp = mean(temp))
+```
+
+* Good plot in Color
+
+```{r}
+plt <- ggplot(flightTemp, aes(x = month, y = avg_temp, fill = origin))+
+  geom_point(size = 2, shape = 21, color = "black")+
+  geom_line(aes(color= origin))+
+  scale_x_continuous(breaks = seq(1, 12, by = 1))+
+  scale_color_manual(values = wes_palette("Darjeeling")[c(2,3,5)])+
+  labs( x = "Month", y = "AVerage Daily Temperature")+
+  ggtitle("Average Temperature at 3 NYC Airports in 2013")+
+  theme_minimal()
+
+plt
+```
+
+This plot shows the average daily temperature measured at 3 NYC airports. You can see that JFK has a slightly lower temperature on average than the other airports. The color of the points indicates which airport and the lines show the trend over time.The outline around the points is meant to help distinguish them when they obscure one another. If I had more time/funding I would adjust the scale perhaps to see if the difference can be seen more easily or jitter the points. 
+
+* Colorblindness comparison
+
+```{r}
+cvd_grid(plt)
+```
+
+
+* Good plot, grayscale
+```{r}
+ggplot(flightTemp, aes(x = month, y = avg_temp, fill = origin)) + 
+  geom_line() +
+  geom_point(size = 2, shape = 21) +
+  scale_fill_grey(start = 0.3, end = 1)+
+  scale_x_continuous(breaks = seq(1, 12, by = 1))+
+  labs( x = "Month", y = "AVerage Daily Temperature")+
+  ggtitle("Average Temperature at 3 NYC Airports in 2013")+
+  theme_minimal()
+```
+
+
+* Heinous Plot
+```{r}
+plt <- ggplot(flightTemp, aes(x = month, y = avg_temp, fill = month))+
+  geom_point(size = 2, shape = 21, color = "pink")+
+  geom_line(aes(color= origin))+
+  scale_x_continuous(breaks = seq(1, 12, by = 1))+
+  scale_color_manual(values = wes_palette("Darjeeling")[c(5,1,3)])+
+  labs( x = "Month", y = "AVerage Daily Temperature")+
+  ggtitle("Average Temperature at 3 NYC Airports in 2013")+
+  theme_wsj()
+
+plt
+```
+
+* This plot is offensive. Color encodes month as well as flight origin. There are useless pink outlines around the points. The background color does not compliment the flight origin colors and seems to emit a smell despite only existing on a computer screen. 
+

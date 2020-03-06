@@ -1,0 +1,121 @@
+---
+title: "Hower_DataViz_Lab01"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### **Load Packages**
+  + load *here*, *tidyverse* and *extrafont* for additional functionality
+
+
+```{r}
+library(here)
+library(tidyverse)
+library(extrafont)
+library(wesanderson)
+```
+  
+### **Assign data to variable**
+  + read data from csv file and assign to object called "hot_dogs"
+
+
+```{r}
+setwd( "C:/Users/User/Documents/DataViz/")
+hot_dogs <- read_csv(here::here("hot_dog_contest.csv"),col_types = cols(
+  gender = col_factor(levels = NULL)
+))
+glimpse(hot_dogs)
+```
+
+
+### **Wrangle Data**  
+  + filter for males after 1981 and create a boolean vector indicating IFOCE years
+  
+  
+```{r} 
+hot_dogs <- hot_dogs %>%
+  filter(gender == "male", year > 1981) %>%
+  mutate(postIFOCE = year >= 1997)
+```
+
+### **Base Plot**
+
+
+```{r}
+ggplot(hot_dogs, aes(x = year, y = num_eaten))+
+geom_col()
+```
+
+
+### **CHALLENGE 1**
+### Plot 1
+  + add title and white borders around bars
+
+
+```{r}
+ggplot(hot_dogs, aes(x = year, y = num_eaten))+
+geom_col(colour = "white") + 
+labs(x ="year", y ="number eaten") +
+ggtitle("Hot Dog Eating Contest Results, 1981 - 2017")
+```
+
+
+### Plot 2
+  + color bars navy blue
+
+
+```{r}
+ggplot(hot_dogs, aes(x = year, y = num_eaten))+
+geom_col(colour = "white", fill = "navyblue") + 
+labs(x ="year", y ="number eaten") +
+ggtitle("Hot Dog Eating Contest Results, 1981 - 2017")
+```
+
+### Plot 3
+  + color bars by IFOCE years to make plot multivariate
+
+
+```{r}
+ggplot(hot_dogs, aes(x = year, y = num_eaten))+
+geom_col(colour = "white", aes(fill = postIFOCE)) + 
+labs(x ="year", y ="number eaten") +
+ggtitle("Hot Dog Eating Contest Results, 1981 - 2017")
+```
+
+
+### Final Plot
+  + Reformat color legend labling to improve readability
+  
+```{r}
+ggplot(hot_dogs, aes(x = year, y = num_eaten))+
+geom_col(aes(fill = postIFOCE), colour = "white") + 
+labs(x ="year", y ="number eaten") +
+ggtitle("Hot Dog Eating Contest Results, 1981 - 2017") +
+theme(legend.title=element_blank()) +
+scale_fill_discrete(name = "",
+                      labels=c("Pre-IFOCE", "Post-IFOCE"))
+``` 
+
+
+### Bonus Plot
+  + change lightness and chroma as an experiment
+  
+```{r}
+ggplot(hot_dogs, aes(x = year, y = num_eaten))+
+geom_col(aes(fill = postIFOCE), colour = "white") + 
+labs(x ="year", y ="number eaten") +
+ggtitle("Hot Dog Eating Contest Results, 1981 - 2017") +
+scale_color_manual("legend", values = wes_palette("FantasticFox"))+
+theme(legend.title=element_blank()) 
+
+```
+
+
+
+
